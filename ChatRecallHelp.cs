@@ -8,6 +8,7 @@ using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.Localization;
+using Terraria.UI.Chat;
 using Terraria.ModLoader;
 
 namespace ChatRecall
@@ -33,21 +34,27 @@ namespace ChatRecall
 
 		internal static void Draw(SpriteBatch spriteBatch)
 		{
-			if (!Main.drawingPlayerChat || !ModContent.GetInstance<ChatRecallConfig>().ShowCommandHelp)
+			if (!Main.drawingPlayerChat)
 				return;
 
 			string typed = Main.chatText ?? "";
-			int space = typed.IndexOf(' ');
-			if (typed.Length < 2 || typed[0] != '/' || space < 0)
+			if (typed.Length < 2 || typed[0] != '/')
 				return;
+			int space = typed.IndexOf(' ');
 
 			// Recomputed when the text or the language changes, and every half second so changing lists (players) stay fresh.
 			string key = typed + "\n" + Language.ActiveCulture.Name + "\n" + Main.GameUpdateCount / 30;
 			if (key != cachedText) {
 				cachedText = key;
-				Compute(typed, space);
+				cachedGhost = ModContent.GetInstance<ChatRecallSystem>().PreviewCompletion(typed);
+				if (space >= 0)
+					Compute(typed, space);
+				else
+					cachedValid = false;
 			}
-			if (!cachedValid)
+
+			DrawGhost(spriteBatch, typed);
+			if (space < 0 || !cachedValid || !ModContent.GetInstance<ChatRecallConfig>().ShowCommandHelp)
 				return;
 
 			string command = cachedCommand, description = cachedDescription;
@@ -56,11 +63,13 @@ namespace ChatRecall
 			string typedArgument = cachedArgument;
 
 			float height = Layout(null, 0, 0, command, description, labels, argCount, current, values, typedArgument, examples);
-			int x = Math.Min(600, Main.screenWidth - Width - 10);
-			int y = Math.Max(10, Main.screenHeight - 46 - (int)height);
+			// Attached to the end of the typed text, like a bubble coming out of the chat bar.
+			int x = Math.Clamp((int)TextEnd(typed) + 40, 360, Math.Max(360, Main.screenWidth - Width - 10));
+			int y = Math.Max(10, Main.screenHeight - 6 - (int)height);
 			var panel = new Rectangle(x, y, Width, (int)height);
 
 			Utils.DrawInvBG(spriteBatch, panel);
+			DrawPointer(spriteBatch, x, Main.screenHeight - 21);
 			exampleAreas.Clear();
 			Layout(spriteBatch, x + Margin, y + 10, command, description, labels, argCount, current, values, typedArgument, examples);
 
@@ -80,6 +89,7 @@ namespace ChatRecall
 		}
 
 		// Texts and suggestions only change when the chat text does, so mods' providers are not called every frame.
+		static string cachedGhost;
 		static string cachedText, cachedCommand, cachedDescription, cachedArgument;
 		static bool cachedValid;
 		static List<string> cachedLabels = new(), cachedExamples = new(), cachedValues = new();
@@ -117,6 +127,32 @@ namespace ChatRecall
 			cachedArgCount = argCount;
 			cachedCurrent = current;
 			cachedArgument = typedArgument;
+		}
+
+		static float TextEnd(string typed)
+		{
+			var snippets = ChatManager.ParseMessage(typed, Color.White).ToArray();
+			return 88 + ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets, Vector2.Zero).X;
+		}
+
+		// Grey rest of the line that Tab would write, drawn in the chat bar after the typed text.
+		static void DrawGhost(SpriteBatch spriteBatch, string typed)
+		{
+			if (cachedGhost == null || cachedGhost.Length <= typed.Length || !cachedGhost.StartsWith(typed, StringComparison.OrdinalIgnoreCase))
+				return;
+			string ghost = cachedGhost.Substring(typed.Length);
+			Utils.DrawBorderString(spriteBatch, ghost, new Vector2(TextEnd(typed) + 6, Main.screenHeight - 30), new Color(150, 152, 175) * 0.7f);
+		}
+
+		// Small triangle on the left edge of the window, pointing at the chat bar.
+		static void DrawPointer(SpriteBatch spriteBatch, int x, int centerY)
+		{
+			var pixel = TextureAssets.MagicPixel.Value;
+			for (int dy = -10; dy <= 10; dy++) {
+				int width = 11 - Math.Abs(dy);
+				spriteBatch.Draw(pixel, new Rectangle(x - width - 2, centerY + dy, width + 4, 1), new Color(10, 14, 34));
+				spriteBatch.Draw(pixel, new Rectangle(x - width, centerY + dy, width + 2, 1), new Color(63, 65, 151) * 0.9f);
+			}
 		}
 
 		// With a null sprite batch it only measures; returns the height of the whole window.

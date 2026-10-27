@@ -151,42 +151,58 @@ namespace ChatRecall
 			string text = Main.chatText ?? "";
 
 			if (text != lastCompletion) {
-				if (text.Length < 2 || text[0] != '/')
-					return;
-
-				string suffix = "";
-				int space = text.IndexOf(' ');
-				if (space < 0) {
-					matches = AllCommands().Where(c => c.StartsWith(text, StringComparison.OrdinalIgnoreCase)).ToList();
-					suffix = " ";
+				if (TryBuildCompletion(text, out string result, out List<string> found, out int cycle)) {
+					matches = found;
+					cycleIndex = cycle;
+					Main.chatText = lastCompletion = result;
 				}
-				else {
-					matches = ChatRecallApi.IsRegistered(text.Substring(0, space)) ? ChatRecallApi.Complete(text, space) : PlayerMatches(text, space);
-				}
-				if (matches.Count == 0)
-					return;
-
-				string result;
-				cycleIndex = -1;
-				if (matches.Count == 1) {
-					result = matches[0] + suffix;
-				}
-				else {
-					string common = CommonPrefix(matches);
-					if (common.Length > text.Length) {
-						result = common;
-					}
-					else {
-						cycleIndex = 0;
-						result = matches[0];
-					}
-				}
-				Main.chatText = lastCompletion = result;
 			}
 			else if (matches.Count > 1) {
 				cycleIndex = (cycleIndex + 1) % matches.Count;
 				Main.chatText = lastCompletion = matches[cycleIndex];
 			}
+		}
+
+		// What the next Tab would write, to show it in grey in the chat bar. Changes nothing.
+		internal string PreviewCompletion(string text)
+		{
+			return text != lastCompletion && TryBuildCompletion(text, out string result, out _, out _) ? result : null;
+		}
+
+		static bool TryBuildCompletion(string text, out string result, out List<string> found, out int cycle)
+		{
+			result = null;
+			found = new List<string>();
+			cycle = -1;
+			if (text.Length < 2 || text[0] != '/')
+				return false;
+
+			string suffix = "";
+			int space = text.IndexOf(' ');
+			if (space < 0) {
+				found = AllCommands().Where(c => c.StartsWith(text, StringComparison.OrdinalIgnoreCase)).ToList();
+				suffix = " ";
+			}
+			else {
+				found = ChatRecallApi.IsRegistered(text.Substring(0, space)) ? ChatRecallApi.Complete(text, space) : PlayerMatches(text, space);
+			}
+			if (found.Count == 0)
+				return false;
+
+			if (found.Count == 1) {
+				result = found[0] + suffix;
+			}
+			else {
+				string common = CommonPrefix(found);
+				if (common.Length > text.Length) {
+					result = common;
+				}
+				else {
+					cycle = 0;
+					result = found[0];
+				}
+			}
+			return true;
 		}
 
 		// Full chat lines with a connected player's name in place of the argument being typed.
