@@ -6,7 +6,7 @@ namespace ChatRecall
 	{
 		public override void Load()
 		{
-			Logger.Info("Chat Recall build 11");
+			Logger.Info("Chat Recall build 12");
 		}
 
 		public override object Call(params object[] args) => ChatRecallApi.Call(args);

@@ -34,13 +34,13 @@ Configs: {
 			Tooltip: Saves the sent lines in a file so they are still there next time you play.
 		}
 	}
-	Help: {
-		Parameters: PARAMETERS
-		Examples: EXAMPLES
-		Required: required
-		KeyHistory: History
-		KeyComplete: Complete
-		KeyScroll: Scroll chat
-		Optional: optional
-	}
+}
+Help: {
+	Parameters: PARAMETERS
+	Examples: EXAMPLES
+	Required: required
+	KeyHistory: History
+	KeyComplete: Complete
+	KeyScroll: Scroll chat
+	Optional: optional
 }

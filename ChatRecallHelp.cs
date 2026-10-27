@@ -220,7 +220,7 @@ namespace ChatRecall
 			if (cachedGhost == null || cachedGhost.Length <= typed.Length || !cachedGhost.StartsWith(typed, StringComparison.OrdinalIgnoreCase))
 				return;
 			string ghost = cachedGhost.Substring(typed.Length);
-			Utils.DrawBorderString(spriteBatch, ghost, new Vector2(TextEnd(typed) + 6, Main.screenHeight - 30), new Color(150, 152, 175) * 0.7f);
+			Utils.DrawBorderString(spriteBatch, ghost, new Vector2(TextEnd(typed) + 2, Main.screenHeight - 30), new Color(150, 152, 175) * 0.7f);
 		}
 
 		// Small triangle on the left edge of the window, pointing at the chat bar.

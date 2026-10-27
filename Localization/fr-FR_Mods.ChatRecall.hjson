@@ -34,13 +34,13 @@ Configs: {
 			Tooltip: Enregistre les lignes envoyées dans un fichier pour les retrouver à la prochaine partie.
 		}
 	}
-	Help: {
-		Parameters: PARAMÈTRES
-		Examples: EXEMPLES
-		Required: obligatoire
-		KeyHistory: Historique
-		KeyComplete: Compléter
-		KeyScroll: Défiler le chat
-		Optional: optionnel
-	}
+}
+Help: {
+	Parameters: PARAMÈTRES
+	Examples: EXEMPLES
+	Required: obligatoire
+	KeyHistory: Historique
+	KeyComplete: Compléter
+	KeyScroll: Défiler le chat
+	Optional: optionnel
 }
