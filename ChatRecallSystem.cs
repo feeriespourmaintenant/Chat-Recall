@@ -149,7 +149,7 @@ namespace ChatRecall
 					suffix = " ";
 				}
 				else {
-					matches = PlayerMatches(text, space);
+					matches = ChatRecallApi.IsRegistered(text.Substring(0, space)) ? ChatRecallApi.Complete(text, space) : PlayerMatches(text, space);
 				}
 				if (matches.Count == 0)
 					return;
@@ -183,7 +183,7 @@ namespace ChatRecall
 			if (!AcceptsPlayers(text.Substring(0, space)))
 				return new List<string>();
 
-			List<string> names = Main.player.Where(p => p.active && !string.IsNullOrEmpty(p.name)).Select(p => p.name).Distinct().ToList();
+			List<string> names = ChatRecallApi.PlayerNames();
 
 			// Player names can contain spaces: try everything after the command first, then only the last word.
 			string head = text.Substring(0, space + 1);
@@ -318,6 +318,7 @@ namespace ChatRecall
 			if (!Main.dedServ)
 				On_Main.DoUpdate_HandleChat -= HandleChatHook;
 			History.Clear();
+			ChatRecallApi.Clear();
 		}
 	}
 }

@@ -7,6 +7,7 @@ Features
 - Press Tab after a slash to complete a command: "/" alone does nothing, "/a" then Tab completes it. When several commands match, the first Tab completes their common part and each further Tab cycles through the matches.
 - Completion knows the commands of the game and of every loaded mod.
 - After a command, Tab completes the name of a connected player when the command's help mentions players (an option makes it do so for every command).
+- Mod authors can plug their own commands and argument types into the completion with Mod.Call (see the source code page for the API).
 - The game's native chat scrolling is no longer triggered by Up and Down. If you bind other keys than the arrows, the arrows keep scrolling the chat as usual.
 
 Settings (Mod Configuration, client side)
