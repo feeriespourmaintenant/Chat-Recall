@@ -17,6 +17,10 @@ Configs: {
 			Label: Touche de complétion
 			Tooltip: Complète la commande en cours d'écriture après un slash, par exemple /a puis cette touche.
 		}
+		ShowKeyHints: {
+			Label: Afficher le rappel des touches
+			Tooltip: Affiche les touches de Chat Recall dans la barre de chat tant que tu n'as pas commencé une commande.
+		}
 		ShowCommandHelp: {
 			Label: Afficher l'aide des commandes
 			Tooltip: Affiche à côté du chat une fenêtre avec les paramètres et les exemples de la commande en cours d'écriture.
@@ -34,6 +38,9 @@ Configs: {
 		Parameters: PARAMÈTRES
 		Examples: EXEMPLES
 		Required: obligatoire
+		KeyHistory: Historique
+		KeyComplete: Compléter
+		KeyScroll: Défiler le chat
 		Optional: optionnel
 	}
 }

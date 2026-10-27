@@ -17,6 +17,10 @@ Configs: {
 			Label: Complete command key
 			Tooltip: Completes the command being typed after a slash, for example /a then this key.
 		}
+		ShowKeyHints: {
+			Label: Show key reminder
+			Tooltip: Shows the keys of Chat Recall in the chat bar until you start typing a command.
+		}
 		ShowCommandHelp: {
 			Label: Show command help
 			Tooltip: Shows a window next to the chat with the parameters and examples of the command you are typing.
@@ -34,6 +38,9 @@ Configs: {
 		Parameters: PARAMETERS
 		Examples: EXAMPLES
 		Required: required
+		KeyHistory: History
+		KeyComplete: Complete
+		KeyScroll: Scroll chat
 		Optional: optional
 	}
 }

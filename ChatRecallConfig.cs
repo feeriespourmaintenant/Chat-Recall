@@ -22,6 +22,9 @@ namespace ChatRecall
 		public Keys CompleteKey;
 
 		[DefaultValue(true)]
+		public bool ShowKeyHints;
+
+		[DefaultValue(true)]
 		public bool ShowCommandHelp;
 
 		[DefaultValue(false)]

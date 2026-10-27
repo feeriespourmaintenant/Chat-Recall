@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -38,7 +39,13 @@ namespace ChatRecall
 				return;
 
 			string typed = Main.chatText ?? "";
-			if (typed.Length < 2 || typed[0] != '/')
+			if (typed.Length == 0 || typed[0] != '/') {
+				// The key reminder is only there until a command is being typed.
+				if (ModContent.GetInstance<ChatRecallConfig>().ShowKeyHints)
+					DrawKeyHints(spriteBatch, typed);
+				return;
+			}
+			if (typed.Length < 2)
 				return;
 			int space = typed.IndexOf(' ');
 
@@ -127,6 +134,78 @@ namespace ChatRecall
 			cachedArgCount = argCount;
 			cachedCurrent = current;
 			cachedArgument = typedArgument;
+		}
+
+		static readonly Color KeyColor = new(170, 178, 215);
+		static readonly Color KeyHot = new(255, 214, 80);
+
+		// Reminder of the keys, inside the chat bar on its right side. The Ctrl + arrows one is gold on purpose.
+		static void DrawKeyHints(SpriteBatch spriteBatch, string typed)
+		{
+			ChatRecallConfig cfg = ModContent.GetInstance<ChatRecallConfig>();
+			int right = (Main.screenWidth > 800 ? 78 + Main.screenWidth - 300 : 78 + TextureAssets.TextBack.Width()) - 14;
+			int centerY = Main.screenHeight - 21;
+			int width = KeyHints(null, 0, centerY, cfg);
+			int left = right - width;
+			if (left < TextEnd(typed) + 24)
+				return;
+			KeyHints(spriteBatch, left, centerY, cfg);
+		}
+
+		static int KeyHints(SpriteBatch sb, int x0, int cy, ChatRecallConfig cfg)
+		{
+			int x = x0;
+			bool arrows = cfg.PreviousKey == Keys.Up && cfg.NextKey == Keys.Down;
+			if (arrows) {
+				x += Key(sb, x, cy, null, -1, KeyColor) + 3;
+				x += Key(sb, x, cy, null, 1, KeyColor) + 3;
+			}
+			else {
+				x += Key(sb, x, cy, cfg.PreviousKey.ToString(), 0, KeyColor) + 3;
+				x += Key(sb, x, cy, cfg.NextKey.ToString(), 0, KeyColor) + 3;
+			}
+			x += Label(sb, x, cy, T("KeyHistory"), Dim) + 14;
+			x += Key(sb, x, cy, cfg.CompleteKey.ToString(), 0, KeyColor) + 3;
+			x += Label(sb, x, cy, T("KeyComplete"), Dim) + 14;
+			x += Key(sb, x, cy, "Ctrl", 0, KeyHot) + 3;
+			x += Label(sb, x, cy, "+", KeyHot) + 4;
+			x += Key(sb, x, cy, null, -1, KeyHot) + 3;
+			x += Key(sb, x, cy, null, 1, KeyHot) + 3;
+			x += Label(sb, x, cy, T("KeyScroll"), new Color(255, 230, 150));
+			return x - x0;
+		}
+
+		static int Label(SpriteBatch sb, int x, int cy, string text, Color color)
+		{
+			Vector2 size = FontAssets.MouseText.Value.MeasureString(text) * 0.85f;
+			if (sb != null)
+				Utils.DrawBorderString(sb, text, new Vector2(x + 4, cy - size.Y / 2 + 2), color, 0.85f);
+			return (int)size.X + 4;
+		}
+
+		// A small key cap: a label, or an arrow when the label is null (direction -1 up, 1 down).
+		static int Key(SpriteBatch sb, int x, int cy, string label, int direction, Color color)
+		{
+			var font = FontAssets.MouseText.Value;
+			int width = label == null ? 28 : (int)(font.MeasureString(label).X * 0.8f) + 14;
+			if (sb == null)
+				return width;
+
+			var pixel = TextureAssets.MagicPixel.Value;
+			var cap = new Rectangle(x, cy - 11, width, 22);
+			sb.Draw(pixel, cap, color);
+			sb.Draw(pixel, new Rectangle(cap.X + 2, cap.Y + 2, cap.Width - 4, cap.Height - 4), new Color(30, 36, 70));
+			if (label != null) {
+				Utils.DrawBorderString(sb, label, new Vector2(x + 7, cy - 9), color, 0.8f);
+			}
+			else {
+				int cx = x + width / 2;
+				for (int i = 0; i < 6; i++) {
+					int row = direction < 0 ? cy - 6 + i : cy + 5 - i;
+					sb.Draw(pixel, new Rectangle(cx - i, row, 2 * i + 1, 1), color);
+				}
+			}
+			return width;
 		}
 
 		static float TextEnd(string typed)

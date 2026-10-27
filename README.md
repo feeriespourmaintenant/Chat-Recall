@@ -4,7 +4,7 @@ A small client-side tModLoader mod for Terraria's chat.
 
 - **Up / Down**: bring back the lines you sent before (messages and `/commands`), and go forward again. Down does nothing on the most recent line.
 - **Tab**: complete a command. `/` alone does nothing, `/a` then Tab completes it, using the commands of the game and of every loaded mod. After a command, Tab also completes player names when the command's help mentions players (or always, with an option). Press Tab again to cycle through matches.
-- **Settings**: keys, history size (1 to 10000, 100 by default), keep the history between sessions (off by default), always suggest player names (off by default), show the command help window (on by default). If you set other keys than the arrows, the game's native chat scrolling stays on the arrows.
+- **Settings**: keys, history size (1 to 10000, 100 by default), keep the history between sessions (off by default), always suggest player names (off by default), show the command help window (on by default). **Ctrl + Up / Down** scrolls the chat like the arrows did before (a reminder is shown in the chat bar). If you set other keys than the arrows, the game's native chat scrolling stays on the arrows.
 
 ## For mod authors: plug your commands into Tab (API v2)
 
