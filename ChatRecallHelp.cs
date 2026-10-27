@@ -41,8 +41,10 @@ namespace ChatRecall
 			if (typed.Length < 2 || typed[0] != '/' || space < 0)
 				return;
 
-			if (typed != cachedText) {
-				cachedText = typed;
+			// Recomputed when the text or the language changes, and every half second so changing lists (players) stay fresh.
+			string key = typed + "\n" + Language.ActiveCulture.Name + "\n" + Main.GameUpdateCount / 30;
+			if (key != cachedText) {
+				cachedText = key;
 				Compute(typed, space);
 			}
 			if (!cachedValid)
