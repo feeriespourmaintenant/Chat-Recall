@@ -21,6 +21,9 @@ namespace ChatRecall
 		[DefaultValue(Keys.Tab)]
 		public Keys CompleteKey;
 
+		[DefaultValue(true)]
+		public bool ShowCommandHelp;
+
 		[DefaultValue(false)]
 		public bool AlwaysSuggestPlayers;
 

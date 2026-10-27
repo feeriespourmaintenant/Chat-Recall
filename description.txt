@@ -8,11 +8,13 @@ Features
 - Completion knows the commands of the game and of every loaded mod.
 - After a command, Tab completes the name of a connected player when the command's help mentions players (an option makes it do so for every command).
 - Mod authors can plug their own commands and argument types into the completion with Mod.Call (see the source code page for the API).
+- A help window appears next to the chat while you type a command, listing its parameters (required or optional), the possible values of the current one and clickable examples. Mods describe their commands through the same API.
 - The game's native chat scrolling is no longer triggered by Up and Down. If you bind other keys than the arrows, the arrows keep scrolling the chat as usual.
 
 Settings (Mod Configuration, client side)
 - History size: from 1 to 10000 lines, 100 by default.
 - Previous line, next line and complete command keys: Up, Down and Tab by default.
+- Show command help window: on by default.
 - Always suggest player names: off by default.
 - Keep history between sessions: off by default. When on, sent lines are saved in a file in the Terraria save folder.
 

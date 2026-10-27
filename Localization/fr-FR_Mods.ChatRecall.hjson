@@ -17,6 +17,10 @@ Configs: {
 			Label: Touche de complétion
 			Tooltip: Complète la commande en cours d'écriture après un slash, par exemple /a puis cette touche.
 		}
+		ShowCommandHelp: {
+			Label: Afficher l'aide des commandes
+			Tooltip: Affiche à côté du chat une fenêtre avec les paramètres et les exemples de la commande en cours d'écriture.
+		}
 		AlwaysSuggestPlayers: {
 			Label: Toujours proposer les pseudos
 			Tooltip: Après une commande, Tab propose les pseudos des joueurs connectés pour toutes les commandes, pas seulement celles dont l'aide parle de joueurs.
@@ -25,5 +29,11 @@ Configs: {
 			Label: Garder l'historique entre les parties
 			Tooltip: Enregistre les lignes envoyées dans un fichier pour les retrouver à la prochaine partie.
 		}
+	}
+	Help: {
+		Parameters: PARAMÈTRES
+		Examples: EXEMPLES
+		Required: obligatoire
+		Optional: optionnel
 	}
 }

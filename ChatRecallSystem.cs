@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework.Input;
+using Terraria.UI;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -36,6 +37,17 @@ namespace ChatRecall
 		{
 			if (!Main.dedServ)
 				On_Main.DoUpdate_HandleChat += HandleChatHook;
+		}
+
+		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
+		{
+			int chat = layers.FindIndex(l => l.Name == "Vanilla: Player Chat");
+			if (chat < 0)
+				return;
+			layers.Insert(chat + 1, new LegacyGameInterfaceLayer("ChatRecall: Command help", () => {
+				ChatRecallHelp.Draw(Main.spriteBatch);
+				return true;
+			}, InterfaceScaleType.UI));
 		}
 
 		static void HandleChatHook(On_Main.orig_DoUpdate_HandleChat orig)

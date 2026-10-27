@@ -9,9 +9,9 @@ namespace ChatRecall
 	// Other mods plug their commands into the Tab completion through Mod.Call, without referencing this mod.
 	internal static class ChatRecallApi
 	{
-		internal const int ApiVersion = 1;
+		internal const int ApiVersion = 2;
 
-		class ArgSpec
+		internal class ArgSpec
 		{
 			public Func<string, IEnumerable<string>> Provider;
 			public string TypeName;
@@ -20,6 +20,15 @@ namespace ChatRecall
 
 		static readonly Dictionary<string, Func<string, IEnumerable<string>>> Types = new();
 		static readonly Dictionary<string, List<ArgSpec>> Commands = new(StringComparer.OrdinalIgnoreCase);
+		static readonly Dictionary<string, CommandInfo> Infos = new(StringComparer.OrdinalIgnoreCase);
+
+		// What the help window shows for a command. Texts can be a string, a LocalizedText or a Func<string>.
+		internal class CommandInfo
+		{
+			public object Description;
+			public List<object> Examples = new();
+			public List<object> Labels = new();
+		}
 
 		internal static object Call(object[] args)
 		{
@@ -31,6 +40,8 @@ namespace ChatRecall
 						return RegisterType(OwnerName(args[1]), (string)args[2], (Func<string, IEnumerable<string>>)args[3]);
 					case "RegisterCommand":
 						return RegisterCommand(OwnerName(args[1]), (string)args[2], args.Skip(3).ToArray());
+					case "DescribeCommand":
+						return DescribeCommand((string)args[2], args[3], args.Length > 4 ? args[4] as IEnumerable<object> : null, args.Length > 5 ? args[5] as IEnumerable<object> : null);
 				}
 			}
 			catch (Exception e) {
@@ -78,10 +89,43 @@ namespace ChatRecall
 			return true;
 		}
 
+		static bool DescribeCommand(string command, object description, IEnumerable<object> examples, IEnumerable<object> labels)
+		{
+			command = (command ?? "").TrimStart('/');
+			if (command.Length == 0 || command.Contains(' '))
+				return false;
+			Infos["/" + command] = new CommandInfo {
+				Description = description,
+				Examples = examples?.ToList() ?? new List<object>(),
+				Labels = labels?.ToList() ?? new List<object>()
+			};
+			return true;
+		}
+
 		internal static void Clear()
 		{
 			Types.Clear();
 			Commands.Clear();
+			Infos.Clear();
+		}
+
+		internal static CommandInfo GetInfo(string commandWithSlash) => Infos.TryGetValue(commandWithSlash, out CommandInfo info) ? info : null;
+
+		internal static List<ArgSpec> GetSpecs(string commandWithSlash) => Commands.TryGetValue(commandWithSlash, out List<ArgSpec> specs) ? specs : null;
+
+		internal static string ResolveText(object text)
+		{
+			try {
+				return text switch {
+					string s => s,
+					Terraria.Localization.LocalizedText t => t.Value,
+					Func<string> f => f(),
+					_ => text?.ToString() ?? ""
+				};
+			}
+			catch (Exception) {
+				return "";
+			}
 		}
 
 		internal static bool IsRegistered(string commandWithSlash) => Commands.ContainsKey(commandWithSlash);
@@ -116,7 +160,7 @@ namespace ChatRecall
 				.ToList();
 		}
 
-		static IEnumerable<string> Provide(ArgSpec spec, string typed)
+		internal static IEnumerable<string> Provide(ArgSpec spec, string typed)
 		{
 			try {
 				Func<string, IEnumerable<string>> provider = spec.Provider;

@@ -17,6 +17,10 @@ Configs: {
 			Label: Complete command key
 			Tooltip: Completes the command being typed after a slash, for example /a then this key.
 		}
+		ShowCommandHelp: {
+			Label: Show command help
+			Tooltip: Shows a window next to the chat with the parameters and examples of the command you are typing.
+		}
 		AlwaysSuggestPlayers: {
 			Label: Always suggest player names
 			Tooltip: After a command, Tab suggests the names of connected players for any command, not only those whose help mentions players.
@@ -25,5 +29,11 @@ Configs: {
 			Label: Keep history between sessions
 			Tooltip: Saves the sent lines in a file so they are still there next time you play.
 		}
+	}
+	Help: {
+		Parameters: Parameters
+		Examples: Examples
+		Required: required
+		Optional: optional
 	}
 }
