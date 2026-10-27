@@ -139,16 +139,25 @@ namespace ChatRecall
 			string text = Main.chatText ?? "";
 
 			if (text != lastCompletion) {
-				if (text.Length < 2 || text[0] != '/' || text.Contains(' '))
+				if (text.Length < 2 || text[0] != '/')
 					return;
-				matches = AllCommands().Where(c => c.StartsWith(text, StringComparison.OrdinalIgnoreCase)).ToList();
+
+				string suffix = "";
+				int space = text.IndexOf(' ');
+				if (space < 0) {
+					matches = AllCommands().Where(c => c.StartsWith(text, StringComparison.OrdinalIgnoreCase)).ToList();
+					suffix = " ";
+				}
+				else {
+					matches = PlayerMatches(text, space);
+				}
 				if (matches.Count == 0)
 					return;
 
 				string result;
 				cycleIndex = -1;
 				if (matches.Count == 1) {
-					result = matches[0] + " ";
+					result = matches[0] + suffix;
 				}
 				else {
 					string common = CommonPrefix(matches);
@@ -166,6 +175,45 @@ namespace ChatRecall
 				cycleIndex = (cycleIndex + 1) % matches.Count;
 				Main.chatText = lastCompletion = matches[cycleIndex];
 			}
+		}
+
+		// Full chat lines with a connected player's name in place of the argument being typed.
+		static List<string> PlayerMatches(string text, int space)
+		{
+			if (!AcceptsPlayers(text.Substring(0, space)))
+				return new List<string>();
+
+			List<string> names = Main.player.Where(p => p.active && !string.IsNullOrEmpty(p.name)).Select(p => p.name).Distinct().ToList();
+
+			// Player names can contain spaces: try everything after the command first, then only the last word.
+			string head = text.Substring(0, space + 1);
+			string tail = text.Substring(space + 1);
+			List<string> found = names.Where(n => n.StartsWith(tail, StringComparison.OrdinalIgnoreCase)).Select(n => head + n).ToList();
+			if (found.Count > 0)
+				return found;
+
+			int lastSpace = text.LastIndexOf(' ');
+			head = text.Substring(0, lastSpace + 1);
+			tail = text.Substring(lastSpace + 1);
+			return names.Where(n => n.StartsWith(tail, StringComparison.OrdinalIgnoreCase)).Select(n => head + n).ToList();
+		}
+
+		// Mods only describe their arguments in free text: a command takes players if its help mentions them.
+		static bool AcceptsPlayers(string commandWithSlash)
+		{
+			if (ModContent.GetInstance<ChatRecallConfig>().AlwaysSuggestPlayers)
+				return true;
+
+			foreach (Mod mod in ModLoader.Mods) {
+				foreach (ModCommand command in mod.GetContent<ModCommand>()) {
+					if (command.Type == CommandType.Console || !commandWithSlash.Equals("/" + command.Command, StringComparison.OrdinalIgnoreCase))
+						continue;
+					string help = (command.Usage ?? "") + " " + (command.Description ?? "");
+					if (help.Contains("player", StringComparison.OrdinalIgnoreCase) || help.Contains("joueur", StringComparison.OrdinalIgnoreCase))
+						return true;
+				}
+			}
+			return false;
 		}
 
 		static string CommonPrefix(List<string> words)

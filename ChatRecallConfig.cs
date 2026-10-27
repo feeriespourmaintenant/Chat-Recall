@@ -22,6 +22,9 @@ namespace ChatRecall
 		public Keys CompleteKey;
 
 		[DefaultValue(false)]
+		public bool AlwaysSuggestPlayers;
+
+		[DefaultValue(false)]
 		public bool KeepBetweenSessions;
 
 		public override void OnChanged()

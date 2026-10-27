@@ -17,6 +17,10 @@ Configs: {
 			Label: Complete command key
 			Tooltip: Completes the command being typed after a slash, for example /a then this key.
 		}
+		AlwaysSuggestPlayers: {
+			Label: Always suggest player names
+			Tooltip: After a command, Tab suggests the names of connected players for any command, not only those whose help mentions players.
+		}
 		KeepBetweenSessions: {
 			Label: Keep history between sessions
 			Tooltip: Saves the sent lines in a file so they are still there next time you play.

@@ -6,7 +6,7 @@ namespace ChatRecall
 	{
 		public override void Load()
 		{
-			Logger.Info("Chat Recall build 2");
+			Logger.Info("Chat Recall build 3");
 		}
 	}
 }
