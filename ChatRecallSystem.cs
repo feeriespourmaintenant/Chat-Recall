@@ -83,8 +83,11 @@ namespace ChatRecall
 			if (now.IsKeyDown(Keys.Enter) && prev.IsKeyUp(Keys.Enter))
 				Add(Main.chatText, cfg);
 
-			bool previous = Fire(cfg.PreviousKey, now);
-			bool next = Fire(cfg.NextKey, now);
+			// Ctrl + arrows is left to the game: it scrolls the chat like the arrows alone did before.
+			bool ctrl = now.IsKeyDown(Keys.LeftControl) || now.IsKeyDown(Keys.RightControl);
+
+			bool previous = !ctrl && Fire(cfg.PreviousKey, now);
+			bool next = !ctrl && Fire(cfg.NextKey, now);
 			bool complete = Fire(cfg.CompleteKey, now);
 
 			if (previous)
@@ -95,7 +98,10 @@ namespace ChatRecall
 				Complete();
 
 			// Hide the keys we use from the game, so the native chat scroll does not react to them.
-			Hide(now, cfg.PreviousKey, cfg.NextKey, cfg.CompleteKey);
+			if (ctrl)
+				Hide(now, cfg.CompleteKey);
+			else
+				Hide(now, cfg.PreviousKey, cfg.NextKey, cfg.CompleteKey);
 
 			prev = now;
 		}
