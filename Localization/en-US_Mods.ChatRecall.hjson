@@ -31,8 +31,8 @@ Configs: {
 		}
 	}
 	Help: {
-		Parameters: Parameters
-		Examples: Examples
+		Parameters: PARAMETERS
+		Examples: EXAMPLES
 		Required: required
 		Optional: optional
 	}

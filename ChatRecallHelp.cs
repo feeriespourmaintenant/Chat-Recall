@@ -41,26 +41,17 @@ namespace ChatRecall
 			if (typed.Length < 2 || typed[0] != '/' || space < 0)
 				return;
 
-			string command = typed.Substring(0, space);
-			ChatRecallApi.CommandInfo info = ChatRecallApi.GetInfo(command);
-			List<ChatRecallApi.ArgSpec> specs = ChatRecallApi.GetSpecs(command);
-			string fallback = info == null ? ModCommandHelp(command) : null;
-			if (info == null && specs == null && fallback == null)
+			if (typed != cachedText) {
+				cachedText = typed;
+				Compute(typed, space);
+			}
+			if (!cachedValid)
 				return;
 
-			string description = info != null ? ChatRecallApi.ResolveText(info.Description) : fallback;
-			List<string> labels = info?.Labels.Select(ChatRecallApi.ResolveText).ToList() ?? new List<string>();
-			List<string> examples = info?.Examples.Select(ChatRecallApi.ResolveText).Where(e => e.Length > 0).ToList() ?? new List<string>();
-
-			string[] parts = typed.Substring(space + 1).Split(' ');
-			int argCount = Math.Max(labels.Count, specs?.Count ?? 0);
-			int current = argCount == 0 ? -1 : Math.Min(parts.Length - 1, argCount - 1);
-			string typedArgument = current < 0 ? "" : string.Join(" ", parts.Skip(current));
-			List<string> values = new();
-			if (specs != null && current >= 0 && current < specs.Count)
-				values = ChatRecallApi.Provide(specs[current], typedArgument)
-					.Where(v => !string.IsNullOrEmpty(v) && v.StartsWith(typedArgument, StringComparison.OrdinalIgnoreCase))
-					.Distinct().ToList();
+			string command = cachedCommand, description = cachedDescription;
+			List<string> labels = cachedLabels, examples = cachedExamples, values = cachedValues;
+			int argCount = cachedArgCount, current = cachedCurrent;
+			string typedArgument = cachedArgument;
 
 			float height = Layout(null, 0, 0, command, description, labels, argCount, current, values, typedArgument, examples);
 			int x = Math.Min(600, Main.screenWidth - Width - 10);
@@ -84,6 +75,46 @@ namespace ChatRecall
 					}
 				}
 			}
+		}
+
+		// Texts and suggestions only change when the chat text does, so mods' providers are not called every frame.
+		static string cachedText, cachedCommand, cachedDescription, cachedArgument;
+		static bool cachedValid;
+		static List<string> cachedLabels = new(), cachedExamples = new(), cachedValues = new();
+		static int cachedArgCount, cachedCurrent;
+
+		static void Compute(string typed, int space)
+		{
+			string command = typed.Substring(0, space);
+			ChatRecallApi.CommandInfo info = ChatRecallApi.GetInfo(command);
+			List<ChatRecallApi.ArgSpec> specs = ChatRecallApi.GetSpecs(command);
+			string fallback = info == null ? ModCommandHelp(command) : null;
+			if (info == null && specs == null && fallback == null)
+				{ cachedValid = false; return; }
+
+			string description = info != null ? ChatRecallApi.ResolveText(info.Description) : fallback;
+			List<string> labels = info?.Labels.Select(ChatRecallApi.ResolveText).ToList() ?? new List<string>();
+			List<string> examples = info?.Examples.Select(ChatRecallApi.ResolveText).Where(e => e.Length > 0).ToList() ?? new List<string>();
+
+			string[] parts = typed.Substring(space + 1).Split(' ');
+			int argCount = Math.Max(labels.Count, specs?.Count ?? 0);
+			int current = argCount == 0 ? -1 : Math.Min(parts.Length - 1, argCount - 1);
+			string typedArgument = current < 0 ? "" : string.Join(" ", parts.Skip(current));
+			List<string> values = new();
+			if (specs != null && current >= 0 && current < specs.Count)
+				values = ChatRecallApi.Provide(specs[current], typedArgument)
+					.Where(v => !string.IsNullOrEmpty(v) && v.StartsWith(typedArgument, StringComparison.OrdinalIgnoreCase))
+					.Distinct().ToList();
+
+			cachedValid = true;
+			cachedCommand = command;
+			cachedDescription = description;
+			cachedLabels = labels;
+			cachedExamples = examples;
+			cachedValues = values;
+			cachedArgCount = argCount;
+			cachedCurrent = current;
+			cachedArgument = typedArgument;
 		}
 
 		// With a null sprite batch it only measures; returns the height of the whole window.
