@@ -132,7 +132,7 @@ namespace ChatRecall
 		static float TextEnd(string typed)
 		{
 			var snippets = ChatManager.ParseMessage(typed, Color.White).ToArray();
-			return 88 + ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets, Vector2.Zero).X;
+			return 88 + ChatManager.GetStringSize(FontAssets.MouseText.Value, snippets, Vector2.One).X;
 		}
 
 		// Grey rest of the line that Tab would write, drawn in the chat bar after the typed text.
