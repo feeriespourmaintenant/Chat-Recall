@@ -1,0 +1,25 @@
+Configs: {
+	ChatRecallConfig: {
+		DisplayName: Chat Recall
+		HistorySize: {
+			Label: Taille de l'historique
+			Tooltip: Nombre de lignes envoyées qui sont gardées (de 1 à 10000).
+		}
+		PreviousKey: {
+			Label: Touche ligne précédente
+			Tooltip: Rappelle la ligne envoyée avant. Si tu la changes, le défilement du chat du jeu reste sur les flèches.
+		}
+		NextKey: {
+			Label: Touche ligne suivante
+			Tooltip: Revient en avant dans l'historique. Ne fait rien sur la ligne la plus récente.
+		}
+		CompleteKey: {
+			Label: Touche de complétion
+			Tooltip: Complète la commande en cours d'écriture après un slash, par exemple /a puis cette touche.
+		}
+		KeepBetweenSessions: {
+			Label: Garder l'historique entre les parties
+			Tooltip: Enregistre les lignes envoyées dans un fichier pour les retrouver à la prochaine partie.
+		}
+	}
+}

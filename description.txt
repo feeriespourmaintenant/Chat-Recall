@@ -1,0 +1,19 @@
+Chat Recall brings the command history and tab completion you know from a terminal to Terraria's chat.
+
+Features
+- Press Up in the chat box to bring back the last line you sent, again to go further back. Press Down to come back toward the most recent line, and once more to get back the text you were typing. Down does nothing when you are already on the latest line.
+- Holding the key repeats, so you can travel quickly through a long history.
+- Messages and /commands are both remembered. The same line sent twice in a row is stored once.
+- Press Tab after a slash to complete a command: "/" alone does nothing, "/a" then Tab completes it. When several commands match, the first Tab completes their common part and each further Tab cycles through the matches.
+- Completion knows the commands of the game and of every loaded mod.
+- The game's native chat scrolling is no longer triggered by Up and Down. If you bind other keys than the arrows, the arrows keep scrolling the chat as usual.
+
+Settings (Mod Configuration, client side)
+- History size: from 1 to 10000 lines, 100 by default.
+- Previous line, next line and complete command keys: Up, Down and Tab by default.
+- Keep history between sessions: off by default. When on, sent lines are saved in a file in the Terraria save folder.
+
+Notes
+- Client side only: it works in single player and on any server, and it does not need to be installed on the server.
+- Available in English and French.
+- Source code (MIT): https://github.com/feeriespourmaintenant/Chat-Recall

@@ -1,0 +1,25 @@
+Configs: {
+	ChatRecallConfig: {
+		DisplayName: Chat Recall
+		HistorySize: {
+			Label: History size
+			Tooltip: How many sent lines are remembered (1 to 10000).
+		}
+		PreviousKey: {
+			Label: Previous line key
+			Tooltip: Brings back the line you sent before. If you change it, the game's chat scrolling stays on the arrow keys.
+		}
+		NextKey: {
+			Label: Next line key
+			Tooltip: Goes forward again in the history. Does nothing on the most recent line.
+		}
+		CompleteKey: {
+			Label: Complete command key
+			Tooltip: Completes the command being typed after a slash, for example /a then this key.
+		}
+		KeepBetweenSessions: {
+			Label: Keep history between sessions
+			Tooltip: Saves the sent lines in a file so they are still there next time you play.
+		}
+	}
+}

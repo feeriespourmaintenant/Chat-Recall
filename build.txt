@@ -1,0 +1,4 @@
+displayName = Chat Recall
+author = Lithopédion
+version = 1.0
+side = Client
